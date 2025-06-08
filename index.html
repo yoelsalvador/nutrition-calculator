@@ -1,0 +1,119 @@
+import math
+
+def calculate_nutrition(gender, age, height_cm, weight_kg, activity_level, goal):
+    # Hitung BMR (Basal Metabolic Rate) menggunakan rumus Mifflin-St Jeor
+    if gender.lower() == 'male':
+        bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age + 5
+    else:
+        bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age - 161
+    
+    # Hitung TDEE (Total Daily Energy Expenditure)
+    tdee = bmr * activity_level
+    
+    # Sesuaikan kalori berdasarkan tujuan
+    if goal.lower() == 'lose':
+        target_calories = tdee - 500  # Defisit 500 kkal untuk menurunkan berat badan
+    elif goal.lower() == 'gain':
+        target_calories = tdee + 500  # Surplus 500 kkal untuk menambah berat badan
+    else:
+        target_calories = tdee  # Maintain weight
+    
+    # Hitung kebutuhan makronutrien (dalam gram)
+    carbs = (0.5 * target_calories) / 4   # 50% dari kalori, 4 kkal/gram
+    protein = (0.2 * target_calories) / 4 # 20% dari kalori, 4 kkal/gram
+    fat = (0.3 * target_calories) / 9     # 30% dari kalori, 9 kkal/gram
+    
+    # Hitung BMI untuk referensi
+    height_m = height_cm / 100
+    bmi = weight_kg / (height_m ** 2)
+    
+    result = {
+        'BMR': round(bmr, 2),
+        'TDEE': round(tdee, 2),
+        'Target_Calories': round(target_calories, 2),
+        'BMI': round(bmi, 1),
+        'Carbohydrates (g)': round(carbs, 1),
+        'Protein (g)': round(protein, 1),
+        'Fat (g)': round(fat, 1)
+    }
+    return result
+
+def get_activity_level():
+    """Fungsi untuk memilih tingkat aktivitas"""
+    print("\nTingkat Aktivitas:")
+    print("1. 1.2 - Tidak aktif (pekerjaan duduk, tidak ada olahraga)")
+    print("2. 1.375 - Aktivitas ringan (olahraga ringan 1-3 hari/minggu)")
+    print("3. 1.55 - Aktivitas sedang (olahraga sedang 3-5 hari/minggu)")
+    print("4. 1.725 - Aktivitas berat (olahraga berat 6-7 hari/minggu)")
+    print("5. 1.9 - Aktivitas sangat berat (olahraga sangat berat atau pekerjaan fisik)")
+    
+    activity_levels = {1: 1.2, 2: 1.375, 3: 1.55, 4: 1.725, 5: 1.9}
+    
+    while True:
+        try:
+            choice = int(input("Pilih nomor (1-5): "))
+            if choice in activity_levels:
+                return activity_levels[choice]
+            else:
+                print("Pilihan tidak valid. Masukkan angka 1-5.")
+        except ValueError:
+            print("Input tidak valid. Masukkan angka 1-5.")
+
+def get_bmi_category(bmi):
+    """Fungsi untuk menentukan kategori BMI"""
+    if bmi < 18.5:
+        return "Kurus"
+    elif 18.5 <= bmi < 25:
+        return "Normal"
+    elif 25 <= bmi < 30:
+        return "Gemuk"
+    else:
+        return "Obesitas"
+
+# Contoh Penggunaan
+if __name__ == '__main__':
+    print("=== KALKULATOR KEBUTUHAN NUTRISI ===\n")
+    
+    try:
+        # Input data pengguna
+        gender = input("Jenis kelamin (male/female): ").strip()
+        while gender.lower() not in ['male', 'female']:
+            gender = input("Input tidak valid. Masukkan 'male' atau 'female': ").strip()
+        
+        age = int(input("Usia (tahun): "))
+        height_cm = float(input("Tinggi badan (cm): "))
+        weight_kg = float(input("Berat badan (kg): "))
+        
+        activity_level = get_activity_level()
+        
+        print("\nTujuan:")
+        print("1. maintain - Mempertahankan berat badan")
+        print("2. lose - Menurunkan berat badan")
+        print("3. gain - Menambah berat badan")
+        goal = input("Masukkan tujuan (maintain/lose/gain): ").strip()
+        while goal.lower() not in ['maintain', 'lose', 'gain']:
+            goal = input("Input tidak valid. Masukkan 'maintain', 'lose', atau 'gain': ").strip()
+        
+        # Hitung hasil
+        result = calculate_nutrition(gender, age, height_cm, weight_kg, activity_level, goal)
+        
+        # Tampilkan hasil
+        print("\n" + "="*50)
+        print("HASIL PERHITUNGAN KEBUTUHAN NUTRISI")
+        print("="*50)
+        print(f"BMI: {result['BMI']} ({get_bmi_category(result['BMI'])})")
+        print(f"BMR (Basal Metabolic Rate): {result['BMR']} kkal/hari")
+        print(f"TDEE (Total Daily Energy Expenditure): {result['TDEE']} kkal/hari")
+        print(f"Target Kalori Harian: {result['Target_Calories']} kkal/hari")
+        print("\nKebutuhan Makronutrien:")
+        print(f"• Karbohidrat: {result['Carbohydrates (g)']} gram/hari")
+        print(f"• Protein: {result['Protein (g)']} gram/hari")
+        print(f"• Lemak: {result['Fat (g)']} gram/hari")
+        print("="*50)
+        
+    except ValueError:
+        print("Error: Pastikan input angka untuk usia, tinggi, dan berat badan.")
+    except Exception as e:
+        print(f"Terjadi error: {e}")
+       "Add nutrition calculator"
+      
